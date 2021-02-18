@@ -2,8 +2,9 @@ import "./App.css";
 import React from "react";
 import Square from "../Square/square";
 import initialiseBoard from "./initialiseBoard";
-import highlightMoves from "./highlightMoves";
+import findPossibleMoves from "./findPossibleMoves";
 import makeMove from "./makeMove";
+import lodash from "lodash";
 
 class App extends React.Component {
   constructor(props) {
@@ -14,11 +15,30 @@ class App extends React.Component {
       activePiece: false,
       easyModeWhite: false,
       easyModeBlack: false,
+      possibleMoves: this.initialiseFalse(),
+      availableMoves: this.initialiseFalse(),
+      blackKingPosition: [0, 3],
+      whiteKingPosition: [7, 3],
+      blackCheck: false,
+      whiteCheck: false,
     };
     this.renderBoard = this.renderBoard.bind(this);
     this.selectActivePiece = this.selectActivePiece.bind(this);
     this.toggleEasyBlack = this.toggleEasyBlack.bind(this);
     this.toggleEasyWhite = this.toggleEasyWhite.bind(this);
+    this.findAvailableMoves = this.findAvailableMoves.bind(this);
+  }
+
+  initialiseFalse() {
+    let grid = [];
+    for (let i = 0; i < 8; i++) {
+      let row = [];
+      for (let j = 0; j < 8; j++) {
+        row.push(false);
+      }
+      grid.push(row);
+    }
+    return grid;
   }
 
   renderBoard() {
@@ -30,6 +50,13 @@ class App extends React.Component {
     }
     return this.state.gameBoard.map((row, rowIndex) => {
       return row.map((square, columnIndex) => {
+        let active = false;
+        if (
+          rowIndex === this.state.activePiece[0] &&
+          columnIndex === this.state.activePiece[1]
+        ) {
+          active = true;
+        }
         return (
           <Square
             key={`${rowIndex} ${columnIndex}`}
@@ -37,8 +64,9 @@ class App extends React.Component {
             pieceColor={square.pieceColor}
             pieceType={square.pieceType}
             onClick={this.handleClick(rowIndex, columnIndex)}
-            active={square.active}
-            possibleMove={square.possibleMove}
+            active={active}
+            possibleMove={this.state.possibleMoves[rowIndex][columnIndex]}
+            availableMove={this.state.availableMoves[rowIndex][columnIndex]}
             easyMode={easyMode}
           />
         );
@@ -49,19 +77,52 @@ class App extends React.Component {
   selectActivePiece(row, col) {
     if (this.state.playerTurn === this.state.gameBoard[row][col].pieceColor) {
       const currentState = this.state.gameBoard;
-      currentState[row][col].active = true;
       this.setState({
         activePiece: [row, col],
       });
       //set all possible moves to active
-      highlightMoves.bind(this)(
+      const possibleMoves = findPossibleMoves.bind(this)(
         row,
         col,
         currentState[row][col].pieceType,
         currentState[row][col].numMoves,
-        this.state.playerTurn
+        this.state.playerTurn,
+        this.state.gameBoard
       );
+      this.setState({
+        possibleMoves: possibleMoves,
+      });
     }
+  }
+
+  findAvailableMoves(colour, gameBoard) {
+    // console.log(`finding moves for ${colour}`);
+    let availableMoves = this.initialiseFalse();
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++)
+        if (gameBoard[row][col].pieceColor === colour) {
+          const moreAvailableMoves = findPossibleMoves.bind(this)(
+            row,
+            col,
+            gameBoard[row][col].pieceType,
+            gameBoard[row][col].numMoves,
+            colour,
+            gameBoard
+          );
+          console.log(
+            `found available moves for ${colour} ${gameBoard[row][col].pieceType}`
+          );
+          console.log(moreAvailableMoves);
+          for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+              if (moreAvailableMoves[i][j]) {
+                availableMoves[i][j] = true;
+              }
+            }
+          }
+        }
+    }
+    return availableMoves;
   }
 
   handleClick(row, col) {
@@ -89,23 +150,35 @@ class App extends React.Component {
   render() {
     return (
       <div className="page">
-        <section className="left">{`${this.state.playerTurn} player's turn`}</section>
-        <section className="gameBoard">{this.renderBoard()}</section>
-        <section className="easyModeToggles">
+        <section className="sideBar white">
+          <div className="playerHeading">White Player</div>
+          <div className="yourTurn white">
+            {this.state.playerTurn === "white" && "Your turn"}
+          </div>
           <figure className="toggle">
-            <label id="blackEasyMode" class="switch black">
-              <input type="checkbox" onChange={this.toggleEasyBlack} />
-              <span class="slider round"></span>
-            </label>
-            <label for="blackEasyMode">Toggle Black Easy Mode</label>
-          </figure>
-          <figure className="toggle">
-            <label id="whiteEasyMode" class="switch white">
+            <label id="whiteEasyMode" className="switch white">
               <input type="checkbox" onChange={this.toggleEasyWhite} />
-              <span class="slider round"></span>
+              <span className="slider round"></span>
             </label>
-            <label for="whiteEasyMode">Toggle White Easy Mode</label>
+            <label htmlFor="whiteEasyMode">Easy Mode</label>
           </figure>
+          <div className="check">{this.state.whiteCheck && "CHECK"}</div>
+        </section>
+
+        <section className="gameBoard">{this.renderBoard()}</section>
+        <section className="sideBar black">
+          <div className="playerHeading">Black Player</div>
+          <div className="yourTurn black">
+            {this.state.playerTurn === "black" && "Your turn"}
+          </div>
+          <figure className="toggle">
+            <label id="blackEasyMode" className="switch black">
+              <input type="checkbox" onChange={this.toggleEasyBlack} />
+              <span className="slider round"></span>
+            </label>
+            <label htmlFor="blackEasyMode">Easy Mode</label>
+          </figure>
+          <div className="check">{this.state.blackCheck && "CHECK"}</div>
         </section>
       </div>
     );

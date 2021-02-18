@@ -1,8 +1,21 @@
+import lodash from "lodash";
+
 function initialiseBoard() {
+  const newSquare = {
+    squareColor: "",
+    pieceType: "none",
+    pieceColor: "none",
+    numMoves: 0,
+  };
   let board = [];
   for (let i = 0; i < 8; i++) {
     let row = [];
-
+    for (let j = 0; j < 8; j++) {
+      row.push(lodash.cloneDeep(newSquare));
+    }
+    board.push(row);
+  }
+  for (let i = 0; i < 8; i++) {
     //set the square colour
     let squareColor;
     if (i % 2 === 0) {
@@ -38,24 +51,17 @@ function initialiseBoard() {
         }
       }
 
-      //create an object describing each square
-      const newSquare = {
-        squareColor,
-        active: false,
-        pieceType,
-        pieceColor,
-        numMoves: 0,
-        possibleMove: false,
-        easyMode: false,
-      };
-      row.push(newSquare);
+      //update object describing each square
+      board[i][j].pieceType = pieceType;
+      board[i][j].pieceColor = pieceColor;
+      board[i][j].squareColor = squareColor;
+
       if (squareColor === "white") {
         squareColor = "black";
       } else {
         squareColor = "white";
       }
     }
-    board.push(row);
   }
   return board;
 }
