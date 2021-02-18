@@ -1,4 +1,5 @@
 function initialiseBoard() {
+  let board = [];
   for (let i = 0; i < 8; i++) {
     let row = [];
 
@@ -43,6 +44,9 @@ function initialiseBoard() {
         active: false,
         pieceType,
         pieceColor,
+        numMoves: 0,
+        possibleMove: false,
+        easyMode: false,
       };
       row.push(newSquare);
       if (squareColor === "white") {
@@ -51,8 +55,9 @@ function initialiseBoard() {
         squareColor = "white";
       }
     }
-    this.state.gameBoard.push(row);
+    board.push(row);
   }
+  return board;
 }
 
 export default initialiseBoard;

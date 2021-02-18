@@ -5,10 +5,11 @@
   background-size: cover;
   background-position: center center;
 }
-.black {
+.square.black {
   background-color: #c37bc7;
 }
 
 .white {
   background-color: white;
 }
+

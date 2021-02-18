@@ -7,13 +7,12 @@ function Square(props) {
   if (props.pieceType !== "none") {
     styles.backgroundImage = imgSrc;
   }
-  return (
-    <div
-      style={styles}
-      className={name}
-      pieceColor={props.pieceColor}
-      pieceType={props.pieceType}
-    ></div>
-  );
+  if (props.possibleMove && props.easyMode) {
+    styles.backgroundColor = "yellow";
+  }
+  if (props.active) {
+    styles.backgroundColor = "red";
+  }
+  return <div style={styles} className={name} onClick={props.onClick}></div>;
 }
 export default Square;
