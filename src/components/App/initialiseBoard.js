@@ -1,6 +1,7 @@
 import lodash from "lodash";
 
 function initialiseBoard() {
+  //initialise board of empty squares
   const newSquare = {
     squareColor: "",
     pieceType: "none",
@@ -45,9 +46,9 @@ function initialiseBoard() {
         } else if (j === 2 || j === 5) {
           pieceType = "bishop";
         } else if (j === 3) {
-          pieceType = "king";
-        } else {
           pieceType = "queen";
+        } else {
+          pieceType = "king";
         }
       }
 
@@ -56,6 +57,8 @@ function initialiseBoard() {
       board[i][j].pieceColor = pieceColor;
       board[i][j].squareColor = squareColor;
 
+
+      //alternate square colour
       if (squareColor === "white") {
         squareColor = "black";
       } else {

@@ -1,21 +1,16 @@
-import lodash from "lodash";
+//this function finds the possible moves for the piece specified in the parameters
 
 function findPossibleMoves(
-  startRow,
-  startCol,
-  pieceToMove,
-  numMoves,
-  playerTurn,
-  currentState
+  startRow, //rowIndex of piece to check
+  startCol, //colIndex of piece to check
+  pieceToMove, //piece type to check
+  numMoves, //the number of moves this piece has already taken
+  playerTurn, //the colour representing whose turn it is
+  gameBoard //the current state of the gameboard
 ) {
-  let possibleMoves = [];
-  for (let i = 0; i < 8; i++) {
-    let row = [];
-    for (let j = 0; j < 8; j++) {
-      row.push(false);
-    }
-    possibleMoves.push(row);
-  }
+  //initialise and 8by8 array of false
+  let possibleMoves = this.initialiseFalse();
+
   if (pieceToMove === "pawn") {
     //white is moving up the board, black is moving down the board
     //pawns can make the following moves
@@ -27,13 +22,13 @@ function findPossibleMoves(
     if (
       playerTurn === "white" &&
       startRow - 1 >= 0 &&
-      currentState[startRow - 1][startCol].pieceType === "none"
+      gameBoard[startRow - 1][startCol].pieceType === "none"
     ) {
       possibleMoves[startRow - 1][startCol] = true;
     } else if (
       playerTurn === "black" &&
       startRow + 1 < 8 &&
-      currentState[startRow + 1][startCol].pieceType === "none"
+      gameBoard[startRow + 1][startCol].pieceType === "none"
     ) {
       possibleMoves[startRow + 1][startCol] = true;
     }
@@ -43,15 +38,15 @@ function findPossibleMoves(
       if (
         playerTurn === "white" &&
         startRow - 2 >= 0 &&
-        currentState[startRow - 1][startCol].pieceType === "none" &&
-        currentState[startRow - 2][startCol].pieceType === "none"
+        gameBoard[startRow - 1][startCol].pieceType === "none" &&
+        gameBoard[startRow - 2][startCol].pieceType === "none"
       ) {
         possibleMoves[startRow - 2][startCol] = true;
       } else if (
         playerTurn === "black" &&
         startRow + 2 < 8 &&
-        currentState[startRow + 1][startCol].pieceType === "none" &&
-        currentState[startRow + 2][startCol].pieceType === "none"
+        gameBoard[startRow + 1][startCol].pieceType === "none" &&
+        gameBoard[startRow + 2][startCol].pieceType === "none"
       ) {
         possibleMoves[startRow + 2][startCol] = true;
       }
@@ -61,26 +56,26 @@ function findPossibleMoves(
     if (playerTurn === "white" && startRow - 1 >= 0) {
       if (
         startCol - 1 >= 0 &&
-        currentState[startRow - 1][startCol - 1].pieceColor === "black"
+        gameBoard[startRow - 1][startCol - 1].pieceColor === "black"
       ) {
         possibleMoves[startRow - 1][startCol - 1] = true;
       }
       if (
         startCol + 1 < 8 &&
-        currentState[startRow - 1][startCol + 1].pieceColor === "black"
+        gameBoard[startRow - 1][startCol + 1].pieceColor === "black"
       ) {
         possibleMoves[startRow - 1][startCol + 1] = true;
       }
     } else if (playerTurn === "black" && startRow + 1 < 8) {
       if (
         startCol + 1 < 8 &&
-        currentState[startRow + 1][startCol + 1].pieceColor === "white"
+        gameBoard[startRow + 1][startCol + 1].pieceColor === "white"
       ) {
         possibleMoves[startRow + 1][startCol + 1] = true;
       }
       if (
         startCol - 1 >= 0 &&
-        currentState[startRow + 1][startCol - 1].pieceColor === "white"
+        gameBoard[startRow + 1][startCol - 1].pieceColor === "white"
       ) {
         possibleMoves[startRow + 1][startCol - 1] = true;
       }
@@ -103,8 +98,8 @@ function findPossibleMoves(
         startRow + moves[i][0] < 8 &&
         startCol + moves[i][1] >= 0 &&
         startCol + moves[i][1] < 8 &&
-        currentState[startRow + moves[i][0]][startCol + moves[i][1]]
-          .pieceColor !== playerTurn
+        gameBoard[startRow + moves[i][0]][startCol + moves[i][1]].pieceColor !==
+          playerTurn
       ) {
         possibleMoves[startRow + moves[i][0]][startCol + moves[i][1]] = true;
       }
@@ -120,10 +115,10 @@ function findPossibleMoves(
 
       //1. Move up
       for (let i = startRow - 1; i >= 0; i--) {
-        if (currentState[i][startCol].pieceType === "none") {
+        if (gameBoard[i][startCol].pieceType === "none") {
           possibleMoves[i][startCol] = true;
         } else {
-          if (currentState[i][startCol].pieceColor !== playerTurn) {
+          if (gameBoard[i][startCol].pieceColor !== playerTurn) {
             possibleMoves[i][startCol] = true;
           }
           i = -1;
@@ -131,10 +126,10 @@ function findPossibleMoves(
       }
       //2. Move down
       for (let i = startRow + 1; i < 8; i++) {
-        if (currentState[i][startCol].pieceType === "none") {
+        if (gameBoard[i][startCol].pieceType === "none") {
           possibleMoves[i][startCol] = true;
         } else {
-          if (currentState[i][startCol].pieceColor !== playerTurn) {
+          if (gameBoard[i][startCol].pieceColor !== playerTurn) {
             possibleMoves[i][startCol] = true;
           }
           i = 8;
@@ -142,10 +137,10 @@ function findPossibleMoves(
       }
       //3. Move left
       for (let i = startCol - 1; i >= 0; i--) {
-        if (currentState[startRow][i].pieceType === "none") {
+        if (gameBoard[startRow][i].pieceType === "none") {
           possibleMoves[startRow][i] = true;
         } else {
-          if (currentState[startRow][i].pieceColor !== playerTurn) {
+          if (gameBoard[startRow][i].pieceColor !== playerTurn) {
             possibleMoves[startRow][i] = true;
           }
           i = -1;
@@ -153,10 +148,10 @@ function findPossibleMoves(
       }
       //4. Move right
       for (let i = startCol + 1; i < 8; i++) {
-        if (currentState[startRow][i].pieceType === "none") {
+        if (gameBoard[startRow][i].pieceType === "none") {
           possibleMoves[startRow][i] = true;
         } else {
-          if (currentState[startRow][i].pieceColor !== playerTurn) {
+          if (gameBoard[startRow][i].pieceColor !== playerTurn) {
             possibleMoves[startRow][i] = true;
           }
           i = 8;
@@ -169,11 +164,11 @@ function findPossibleMoves(
       //1. up and left
       for (let i = 1; i < 8; i++) {
         if (startRow - i >= 0 && startCol - i >= 0) {
-          if (currentState[startRow - i][startCol - i].pieceType === "none") {
+          if (gameBoard[startRow - i][startCol - i].pieceType === "none") {
             possibleMoves[startRow - i][startCol - i] = true;
           } else {
             if (
-              currentState[startRow - i][startCol - i].pieceColor !== playerTurn
+              gameBoard[startRow - i][startCol - i].pieceColor !== playerTurn
             ) {
               possibleMoves[startRow - i][startCol - i] = true;
             }
@@ -187,11 +182,11 @@ function findPossibleMoves(
       //2. up and right
       for (let i = 1; i < 8; i++) {
         if (startRow - i >= 0 && startCol + i < 8) {
-          if (currentState[startRow - i][startCol + i].pieceType === "none") {
+          if (gameBoard[startRow - i][startCol + i].pieceType === "none") {
             possibleMoves[startRow - i][startCol + i] = true;
           } else {
             if (
-              currentState[startRow - i][startCol + i].pieceColor !== playerTurn
+              gameBoard[startRow - i][startCol + i].pieceColor !== playerTurn
             ) {
               possibleMoves[startRow - i][startCol + i] = true;
             }
@@ -205,11 +200,11 @@ function findPossibleMoves(
       //3. down and left
       for (let i = 1; i < 8; i++) {
         if (startRow + i < 8 && startCol - i >= 0) {
-          if (currentState[startRow + i][startCol - i].pieceType === "none") {
+          if (gameBoard[startRow + i][startCol - i].pieceType === "none") {
             possibleMoves[startRow + i][startCol - i] = true;
           } else {
             if (
-              currentState[startRow + i][startCol - i].pieceColor !== playerTurn
+              gameBoard[startRow + i][startCol - i].pieceColor !== playerTurn
             ) {
               possibleMoves[startRow + i][startCol - i] = true;
             }
@@ -223,11 +218,11 @@ function findPossibleMoves(
       //4. down and right
       for (let i = 1; i < 8; i++) {
         if (startRow + i < 8 && startCol + i < 8) {
-          if (currentState[startRow + i][startCol + i].pieceType === "none") {
+          if (gameBoard[startRow + i][startCol + i].pieceType === "none") {
             possibleMoves[startRow + i][startCol + i] = true;
           } else {
             if (
-              currentState[startRow + i][startCol + i].pieceColor !== playerTurn
+              gameBoard[startRow + i][startCol + i].pieceColor !== playerTurn
             ) {
               possibleMoves[startRow + i][startCol + i] = true;
             }
@@ -256,8 +251,8 @@ function findPossibleMoves(
         startRow + moves[i][0] < 8 &&
         startCol + moves[i][1] >= 0 &&
         startCol + moves[i][1] < 8 &&
-        currentState[startRow + moves[i][0]][startCol + moves[i][1]]
-          .pieceColor !== playerTurn
+        gameBoard[startRow + moves[i][0]][startCol + moves[i][1]].pieceColor !==
+          playerTurn
       ) {
         possibleMoves[startRow + moves[i][0]][startCol + moves[i][1]] = true;
       }

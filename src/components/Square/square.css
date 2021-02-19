@@ -6,10 +6,9 @@
   background-position: center center;
 }
 .square.black {
-  background-color: #c37bc7;
+  background-color: var(--pink);
 }
 
 .white {
   background-color: white;
 }
-

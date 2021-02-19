@@ -1,4 +1,5 @@
 import lodash from "lodash";
+import findAvailableMoves from "./findAvailableMoves";
 
 function makeMove(row, col) {
   //if the clicked square is already selected, deselect it
@@ -30,7 +31,7 @@ function makeMove(row, col) {
     return;
   }
 
-  //if the move was valid, move the piece by updating the state of gameboard
+  //if the move was valid, move the piece by updating the state of gameboard with a deep copy
   const newState = lodash.cloneDeep(this.state.gameBoard);
   const possibleMoves = lodash.cloneDeep(this.state.possibleMoves);
   const startSquare = newState[startRow][startCol];
@@ -40,55 +41,58 @@ function makeMove(row, col) {
       possibleMoves[r][c] = false;
     }
   }
+  //empty start square
   startSquare.pieceType = "none";
   startSquare.pieceColor = "none";
   startSquare.active = false;
   startSquare.numMoves = 0;
+  //fill end square with moving piece
   endSquare.pieceType = pieceToMove;
   endSquare.pieceColor = this.state.playerTurn;
   endSquare.numMoves = numMoves + 1;
+  //switch who's turn it is
   let nextPlayer = "white";
   if (this.state.playerTurn === "white") {
     nextPlayer = "black";
   }
-  let kingPosition = [];
+  //update position of king if king was moved
   let blackKingPosition = this.state.blackKingPosition;
   let whiteKingPosition = this.state.whiteKingPosition;
-  if (this.state.playerTurn === "white") {
-    kingPosition = whiteKingPosition;
-  } else {
-    kingPosition = blackKingPosition;
+  if (this.state.playerTurn === "white" && pieceToMove === "king") {
+    whiteKingPosition = [row, col];
+  } else if (this.state.playerTurn === "black" && pieceToMove === "king") {
+    blackKingPosition = [row, col];
   }
-  if (pieceToMove === "king") {
-    kingPosition = [row, col];
-    if (this.state.playerTurn === "white") {
-      whiteKingPosition = kingPosition;
-    } else {
-      blackKingPosition = kingPosition;
-    }
-  }
+  const kingPosition =
+    this.state.playerTurn === "white" ? whiteKingPosition : blackKingPosition;
 
   //if the move was valid, check if it puts current player into check before finalising move
-  const vulnerablePositions = this.findAvailableMoves(nextPlayer, newState);
+  const vulnerablePositions = findAvailableMoves.bind(this)(
+    nextPlayer,
+    newState
+  );
   if (vulnerablePositions[kingPosition[0]][kingPosition[1]]) {
-    alert(`This would but you into check, make another move`);
+    this.setState({
+      illegalMove: true,
+    });
   } else {
-    //if valid move and not in check, update gameboard
+    //if move was valid and will not put the player into check, update gameboard
     let blackCheck = false;
     let whiteCheck = false;
     if (this.state.playerTurn === "white") {
-      whiteCheck =
-        vulnerablePositions[whiteKingPosition[0]][whiteKingPosition[1]];
-      blackCheck = this.findAvailableMoves(this.state.playerTurn, newState)[
-        blackKingPosition[0]
-      ][blackKingPosition[1]];
+      //check if white put black into check
+      blackCheck = findAvailableMoves.bind(this)(
+        this.state.playerTurn,
+        newState
+      )[blackKingPosition[0]][blackKingPosition[1]];
     } else {
-      blackCheck =
-        vulnerablePositions[blackKingPosition[0]][blackKingPosition[1]];
-      whiteCheck = this.findAvailableMoves(this.state.playerTurn, newState)[
-        whiteKingPosition[0]
-      ][whiteKingPosition[1]];
+      //check if black put white into check
+      whiteCheck = findAvailableMoves.bind(this)(
+        this.state.playerTurn,
+        newState
+      )[whiteKingPosition[0]][whiteKingPosition[1]];
     }
+    //update state of game to finalise move
     this.setState({
       gameBoard: newState,
       possibleMoves,

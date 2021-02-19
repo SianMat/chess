@@ -12,7 +12,6 @@ function Square(props) {
       props.pieceType +
       ".png"
     })`;
-    // styles.backgroundImage = imgSrc;
   }
   // if (props.availableMove) {
   //   styles.backgroundColor = "green";

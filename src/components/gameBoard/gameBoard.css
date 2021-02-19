@@ -1,0 +1,7 @@
+.gameBoard {
+    margin: 10px auto;
+    width: 90vh;
+    height: 90vh;
+    display: grid;
+    grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+  }
