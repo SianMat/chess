@@ -1,12 +1,10 @@
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  display: grid;
+  grid-template-rows: repeat(4, 1fr) 40%;
   width: 100%;
   font-size: 2rem;
   border: solid black 2px;
   padding: 30px;
-  color: var(--dark-green);
 }
 
 .sidebar.black {
@@ -34,6 +32,7 @@
 }
 
 .check {
+  height: 125px;
   padding: 10px;
   border-radius: 50px;
   font-weight: bold;

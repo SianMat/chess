@@ -1,0 +1,12 @@
+.capturedPieces {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+.capturedPiece {
+  width: 10vh;
+  height: 10vh;
+}

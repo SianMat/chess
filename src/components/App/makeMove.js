@@ -36,6 +36,10 @@ function makeMove(row, col) {
   const possibleMoves = lodash.cloneDeep(this.state.possibleMoves);
   const startSquare = newState[startRow][startCol];
   const endSquare = newState[row][col];
+  const whiteCapturedPieces = this.state.whiteCapturedPieces.slice();
+  const blackCapturedPieces = this.state.blackCapturedPieces.slice();
+  const capturedPiece = this.state.gameBoard[row][col].pieceType;
+
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       possibleMoves[r][c] = false;
@@ -50,6 +54,7 @@ function makeMove(row, col) {
   endSquare.pieceType = pieceToMove;
   endSquare.pieceColor = this.state.playerTurn;
   endSquare.numMoves = numMoves + 1;
+
   //switch who's turn it is
   let nextPlayer = "white";
   if (this.state.playerTurn === "white") {
@@ -85,12 +90,22 @@ function makeMove(row, col) {
         this.state.playerTurn,
         newState
       )[blackKingPosition[0]][blackKingPosition[1]];
+
+      //check if white took a black piece and add to captured pieces
+      if (capturedPiece !== "none") {
+        whiteCapturedPieces.push(capturedPiece);
+      }
     } else {
       //check if black put white into check
       whiteCheck = findAvailableMoves.bind(this)(
         this.state.playerTurn,
         newState
       )[whiteKingPosition[0]][whiteKingPosition[1]];
+
+      //check if black took a white piece and add to captured pieces
+      if (capturedPiece !== "none") {
+        blackCapturedPieces.push(capturedPiece);
+      }
     }
     //update state of game to finalise move
     this.setState({
@@ -99,10 +114,12 @@ function makeMove(row, col) {
       playerTurn: nextPlayer,
       activePiece: false,
       availableMoves: vulnerablePositions,
-      whiteKingPosition,
       blackKingPosition,
+      whiteKingPosition,
       blackCheck,
       whiteCheck,
+      blackCapturedPieces,
+      whiteCapturedPieces,
     });
   }
 }

@@ -3,15 +3,10 @@ import "./square.css";
 function Square(props) {
   const name = `square ${props.squareColor}`;
   const styles = {};
-
+  let image;
   if (props.pieceType !== "none") {
-    styles.backgroundImage = `url(${
-      process.env.PUBLIC_URL +
-      "/Images/" +
-      props.pieceColor +
-      props.pieceType +
-      ".png"
-    })`;
+    image = require(`../../Images/${props.pieceColor}${props.pieceType}.png`);
+    // styles.backgroundImage = `url(${image.default})`;
   }
   // if (props.availableMove) {
   //   styles.backgroundColor = "green";
@@ -23,6 +18,17 @@ function Square(props) {
   if (props.active) {
     styles.backgroundColor = "red";
   }
-  return <div style={styles} className={name} onClick={props.onClick}></div>;
+
+  function renderImage() {
+    if (image) {
+      return <img className="chessPiece" src={image.default} alt="" />;
+    }
+  }
+
+  return (
+    <div style={styles} className={name} onClick={props.onClick}>
+      {renderImage()}
+    </div>
+  );
 }
 export default Square;

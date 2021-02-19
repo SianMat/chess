@@ -22,4 +22,6 @@
 .page {
   display: grid;
   grid-template-columns: 1fr 100vh 1fr;
+  grid-template-rows: 90vh;
+  padding: 20px;
 }

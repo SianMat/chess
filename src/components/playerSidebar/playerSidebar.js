@@ -1,7 +1,12 @@
 import "./playerSidebar.css";
 import Toggle from "../toggle/toggle";
+import CapturedPieces from "../capturedPieces/capturedPieces";
 
 function Sidebar(props) {
+  let opponent = "white";
+  if (props.colour === "white") {
+    opponent = "black";
+  }
   const sectionClassName = `sidebar ${props.colour}`;
   const playerHeading = `${props.colour} Player`;
   const labelId = `${props.colour}EasyMode`;
@@ -17,6 +22,10 @@ function Sidebar(props) {
         colour={props.colour}
       />
       <div className="check">{props.check && "CHECK"}</div>
+      <CapturedPieces
+        pieces={props.capturedPieces}
+        colour={opponent}
+      ></CapturedPieces>
     </section>
   );
 }
