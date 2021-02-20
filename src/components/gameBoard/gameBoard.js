@@ -28,7 +28,7 @@ function GameBoard(props) {
             onClick={props.handleClick(rowIndex, columnIndex)}
             active={active}
             possibleMove={props.possibleMoves[rowIndex][columnIndex]}
-            availableMove={props.availableMoves[rowIndex][columnIndex]}
+            // availableMove={props.availableMoves[rowIndex][columnIndex]}
             easyMode={easyMode}
           />
         );

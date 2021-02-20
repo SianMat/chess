@@ -17,7 +17,7 @@ function initialiseBoard() {
     board.push(row);
   }
   for (let i = 0; i < 8; i++) {
-    //set the square colour
+    //set the square color
     let squareColor;
     if (i % 2 === 0) {
       squareColor = "white";
@@ -25,7 +25,7 @@ function initialiseBoard() {
       squareColor = "black";
     }
 
-    //set the piece colour for starting positions (black at top, white at bottom)
+    //set the piece color for starting positions (black at top, white at bottom)
     let pieceColor = "none";
     if (i === 0 || i === 1) {
       pieceColor = "black";
@@ -58,7 +58,7 @@ function initialiseBoard() {
       board[i][j].squareColor = squareColor;
 
 
-      //alternate square colour
+      //alternate square color
       if (squareColor === "white") {
         squareColor = "black";
       } else {

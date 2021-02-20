@@ -4,6 +4,7 @@ function Square(props) {
   const name = `square ${props.squareColor}`;
   const styles = {};
   let image;
+
   if (props.pieceType !== "none") {
     image = require(`../../Images/${props.pieceColor}${props.pieceType}.png`);
     // styles.backgroundImage = `url(${image.default})`;

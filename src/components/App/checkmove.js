@@ -16,7 +16,7 @@ function checkMove(
     //pawns can make the following moves
     //-move forward one if space is free
     //-move forward two if both spaces are free and it is in the start position
-    //-move diagonally one to take a piece of the opposite colour
+    //-move diagonally one to take a piece of the opposite color
 
     //if new space is empty
     if (pieceToTake === "none") {

@@ -4,27 +4,27 @@ import CapturedPieces from "../capturedPieces/capturedPieces";
 
 function Sidebar(props) {
   let opponent = "white";
-  if (props.colour === "white") {
+  if (props.color === "white") {
     opponent = "black";
   }
-  const sectionClassName = `sidebar ${props.colour}`;
-  const playerHeading = `${props.colour} Player`;
-  const labelId = `${props.colour}EasyMode`;
+  const sectionClassName = `sidebar ${props.color}`;
+  const playerHeading = `${props.color} Player`;
+  const labelId = `${props.color}EasyMode`;
   return (
     <section className={sectionClassName}>
       <div className="playerHeading">{playerHeading}</div>
       <div className="yourTurn">
-        {props.playerTurn === props.colour && "Your turn"}
+        {props.playerTurn === props.color && "Your turn"}
       </div>
       <Toggle
         labelId={labelId}
         toggleEasyMode={props.toggleEasyMode}
-        colour={props.colour}
+        color={props.color}
       />
       <div className="check">{props.check && "CHECK"}</div>
       <CapturedPieces
         pieces={props.capturedPieces}
-        colour={opponent}
+        color={opponent}
       ></CapturedPieces>
     </section>
   );

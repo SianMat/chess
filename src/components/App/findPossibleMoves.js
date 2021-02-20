@@ -5,18 +5,25 @@ function findPossibleMoves(
   startCol, //colIndex of piece to check
   pieceToMove, //piece type to check
   numMoves, //the number of moves this piece has already taken
-  playerTurn, //the colour representing whose turn it is
+  playerTurn, //the color representing whose turn it is
   gameBoard //the current state of the gameboard
 ) {
   //initialise and 8by8 array of false
-  let possibleMoves = this.initialiseFalse();
+  let possibleMoves = [];
+  for (let i = 0; i < 8; i++) {
+    let row = [];
+    for (let j = 0; j < 8; j++) {
+      row.push(false);
+    }
+    possibleMoves.push(row);
+  }
 
   if (pieceToMove === "pawn") {
     //white is moving up the board, black is moving down the board
     //pawns can make the following moves
     //1. move forward one if space is free
     //2. move forward two if both spaces are free and it is in the start position
-    //3. move diagonally one to take a piece of the opposite colour
+    //3. move diagonally one to take a piece of the opposite color
 
     //1. move forward one space
     if (
