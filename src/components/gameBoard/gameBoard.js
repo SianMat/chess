@@ -1,4 +1,4 @@
-import Square from "../square/square";
+import Square from "../Square/square";
 import "./gameBoard.css";
 
 function GameBoard(props) {
