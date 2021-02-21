@@ -86,6 +86,7 @@ function makeMove(row, col) {
     this.setState({
       illegalMove: true,
     });
+    return;
   } else {
     //if move was valid and will not put the player into check, update gameboard
     let blackCheck = false;
@@ -130,6 +131,16 @@ function makeMove(row, col) {
         blackCapturedPieces.push(capturedPiece);
       }
     }
+    let pawnPromotion = false;
+    //if pawn has reached opposite side of board, call on pawn promotion
+    if (pieceToMove === "pawn") {
+      if (
+        (playerTurn === "white" && row === 0) ||
+        (playerTurn === "black" && row === 7)
+      ) {
+        pawnPromotion = [row, col];
+      }
+    }
     //update state of game to finalise move
     this.setState({
       gameBoard: newState,
@@ -144,19 +155,8 @@ function makeMove(row, col) {
       blackCapturedPieces,
       whiteCapturedPieces,
       checkMate: endGame,
+      pawnPromotion,
     });
-  }
-
-  //if pawn has reached opposite side of board, call on pawn promotion
-  if (pieceToMove === "pawn") {
-    if (
-      (playerTurn === "white" && row === 0) ||
-      (playerTurn === "black" && row === 7)
-    ) {
-      this.setState({
-        pawnPromotion: [row, col],
-      });
-    }
   }
 }
 
