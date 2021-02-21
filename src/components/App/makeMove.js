@@ -98,8 +98,8 @@ function makeMove(row, col) {
       blackCheck = findAvailableMoves.bind(this)(playerTurn, newState)[
         blackKingPosition[0]
       ][blackKingPosition[1]];
-      //if black is now in check, test for check mate
-      if (blackCheck) {
+      //if black is now in check or if black only has king left, test for check mate
+      if (blackCheck || whiteCapturedPieces.length === 15) {
         endGame = checkMate.bind(this)(
           "black",
           "white",
@@ -117,8 +117,8 @@ function makeMove(row, col) {
       whiteCheck = findAvailableMoves.bind(this)(playerTurn, newState)[
         whiteKingPosition[0]
       ][whiteKingPosition[1]];
-      //if white is now in check, test for check mate
-      if (whiteCheck) {
+      //if white is now in check or if white only has king left, test for check mate
+      if (whiteCheck || blackCapturedPieces.length === 15) {
         endGame = checkMate.bind(this)(
           "white",
           "black",
