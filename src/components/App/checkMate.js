@@ -34,15 +34,18 @@ function checkMate(defendingColor, attackingColor, gameBoard, kingPosition) {
               endSquare.pieceType = pieceToMove;
               endSquare.pieceColor = defendingColor;
               //update position of king if king was moved
+              let tempKingPosition = [kingPosition[0], kingPosition[1]];
               if (pieceToMove === "king") {
-                kingPosition = [endRow, endCol];
+                tempKingPosition = [endRow, endCol];
               }
               //check if move takes current player out of check. If it does, player is not in check mate so exit function
               const vulnerablePositions = findAvailableMoves.bind(this)(
                 attackingColor,
                 tempNewState
               );
-              if (!vulnerablePositions[kingPosition[0]][kingPosition[1]]) {
+              if (
+                !vulnerablePositions[tempKingPosition[0]][tempKingPosition[1]]
+              ) {
                 return false;
               }
             }
