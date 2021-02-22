@@ -14,7 +14,7 @@ This project is a classic game I decided to make so that I could practice workin
 
 ## Launch
 
-Click on [website link](https://60326f28099f680007bb268a--vibrant-johnson-e991a0.netlify.app/ "Play Chess").
+Click on [website link](https://vibrant-johnson-e991a0.netlify.app/ "Play Chess").
 
 ## Scope of functionalities and limitations
 
