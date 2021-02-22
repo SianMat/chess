@@ -2,11 +2,17 @@
 
 import lodash from "lodash";
 import findAvailableMoves from "./findAvailableMoves";
-import checkMate from "./checkMate";
 
-function makeMove(row, col) {
+function makeMove(
+  endRow, //row index of square player is attempting to move to
+  endCol //column index of square player is attempting to move to
+) {
   //if the clicked square is already selected, deselect it
-  if (this.state.activePiece[0] === row && this.state.activePiece[1] === col) {
+  if (
+    this.state.activePiece[0] === endRow &&
+    this.state.activePiece[1] === endCol
+  ) {
+    //reset possible moves to false
     const possibleMoves = lodash.cloneDeep(this.state.possibleMoves);
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
@@ -17,35 +23,40 @@ function makeMove(row, col) {
       possibleMoves: possibleMoves,
       activePiece: false,
     });
+    //exit function
     return;
   }
 
   //if the player clicks on a piece of their own color, do nothing
-  if (this.state.gameBoard[row][col].pieceColor === this.state.playerTurn) {
+  if (
+    this.state.gameBoard[endRow][endCol].pieceColor === this.state.playerTurn
+  ) {
     return;
   }
 
-  //else check if the move is valid
-  const startRow = this.state.activePiece[0];
-  const startCol = this.state.activePiece[1];
-  const pieceToMove = this.state.gameBoard[startRow][startCol].pieceType;
-  const numMoves = this.state.gameBoard[startRow][startCol].numMoves; //used to track if it is the first move for a pawn
-
-  const validMove = this.state.possibleMoves[row][col];
+  //check if attempted move is a possible move, else do nothing and exit function
+  const validMove = this.state.possibleMoves[endRow][endCol];
   if (!validMove) {
     return;
   }
 
-  //if the move was valid, move the piece by updating the state of gameboard with a deep copy
+  //else check if the move is valid
+  const startRow = this.state.activePiece[0]; //row index of square player is trying to move from
+  const startCol = this.state.activePiece[1]; //column index of square player is trying to move from
+  const pieceToMove = this.state.gameBoard[startRow][startCol].pieceType; //piece type that player is trying to move
+  const numMoves = this.state.gameBoard[startRow][startCol].numMoves; //used to track if it is the first move for a pawn
+
+  //simulate moving the piece with a deep copy of the gameboard
   const newState = lodash.cloneDeep(this.state.gameBoard);
   const possibleMoves = lodash.cloneDeep(this.state.possibleMoves);
   const startSquare = newState[startRow][startCol];
-  const endSquare = newState[row][col];
+  const endSquare = newState[endRow][endCol];
   const whiteCapturedPieces = this.state.whiteCapturedPieces.slice();
   const blackCapturedPieces = this.state.blackCapturedPieces.slice();
-  const capturedPiece = this.state.gameBoard[row][col].pieceType;
-  const playerTurn = this.state.playerTurn;
+  const capturedPiece = this.state.gameBoard[endRow][endCol].pieceType; //piece that current player is trying to take (if there is one, else null)
+  const playerTurn = this.state.playerTurn; //color of player whose turn it is
 
+  //reset all simulated possible moves to false
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
       possibleMoves[r][c] = false;
@@ -61,53 +72,44 @@ function makeMove(row, col) {
   endSquare.pieceColor = playerTurn;
   endSquare.numMoves = numMoves + 1;
 
-  //switch who's turn it is
+  //switch whose turn it is
   let nextPlayer = "white";
   if (playerTurn === "white") {
     nextPlayer = "black";
   }
   //update position of king if king was moved
-  let blackKingPosition = this.state.blackKingPosition;
-  let whiteKingPosition = this.state.whiteKingPosition;
+  let blackKingPosition = lodash.cloneDeep(this.state.blackKingPosition);
+  let whiteKingPosition = lodash.cloneDeep(this.state.whiteKingPosition);
   if (playerTurn === "white" && pieceToMove === "king") {
-    whiteKingPosition = [row, col];
+    whiteKingPosition = [endRow, endCol];
   } else if (playerTurn === "black" && pieceToMove === "king") {
-    blackKingPosition = [row, col];
+    blackKingPosition = [endRow, endCol];
   }
   const kingPosition =
     playerTurn === "white" ? whiteKingPosition : blackKingPosition;
 
-  //if the move was valid, check if it puts current player into check before finalising move
+  //check if simulated move will put current player into check
   const vulnerablePositions = findAvailableMoves.bind(this)(
     nextPlayer,
     newState
   );
+  //if the move will put current player into check, set illegal move to true and exit function
   if (vulnerablePositions[kingPosition[0]][kingPosition[1]]) {
     this.setState({
       illegalMove: true,
     });
     return;
   } else {
-    //if move was valid and will not put the player into check, update gameboard
+    //if simulated move will not put the player into check, update gameboard
     let blackCheck = false;
     let whiteCheck = false;
     let endGame = false;
-
+    //first check if current player has put opponent into check and update captured pieces if necessary
     if (playerTurn === "white") {
       //check if white will put black into check
       blackCheck = findAvailableMoves.bind(this)(playerTurn, newState)[
         blackKingPosition[0]
       ][blackKingPosition[1]];
-      //if black is now in check or if black only has king left, test for check mate
-      if (blackCheck || whiteCapturedPieces.length === 15) {
-        endGame = checkMate.bind(this)(
-          "black",
-          "white",
-          newState,
-          blackKingPosition
-        );
-      }
-
       //check if white will take a black piece and add to captured pieces
       if (capturedPiece !== "none") {
         whiteCapturedPieces.push(capturedPiece);
@@ -117,28 +119,19 @@ function makeMove(row, col) {
       whiteCheck = findAvailableMoves.bind(this)(playerTurn, newState)[
         whiteKingPosition[0]
       ][whiteKingPosition[1]];
-      //if white is now in check or if white only has king left, test for check mate
-      if (whiteCheck || blackCapturedPieces.length === 15) {
-        endGame = checkMate.bind(this)(
-          "white",
-          "black",
-          newState,
-          whiteKingPosition
-        );
-      }
       //check if black will take a white piece and add to captured pieces
       if (capturedPiece !== "none") {
         blackCapturedPieces.push(capturedPiece);
       }
     }
-    let pawnPromotion = false;
     //if pawn has reached opposite side of board, call on pawn promotion
+    let pawnPromotion = false;
     if (pieceToMove === "pawn") {
       if (
-        (playerTurn === "white" && row === 0) ||
-        (playerTurn === "black" && row === 7)
+        (playerTurn === "white" && endRow === 0) ||
+        (playerTurn === "black" && endRow === 7)
       ) {
-        pawnPromotion = [row, col];
+        pawnPromotion = [endRow, endCol];
       }
     }
     //update state of game to finalise move
@@ -156,6 +149,7 @@ function makeMove(row, col) {
       whiteCapturedPieces,
       checkMate: endGame,
       pawnPromotion,
+      moveSuccessful: true,
     });
   }
 }

@@ -4,6 +4,8 @@ import findPossibleMoves from "./findPossibleMoves";
 
 function checkMate(defendingColor, attackingColor, gameBoard, kingPosition) {
   //color of defending player, color of attacking player, current state of gameboard, position of defending king
+
+  //cycle through current gameboard and find all pieces of defending color
   for (let startRow = 0; startRow < 8; startRow++) {
     for (let startCol = 0; startCol < 8; startCol++) {
       //for each defending piece, find all possible moves
@@ -19,6 +21,7 @@ function checkMate(defendingColor, attackingColor, gameBoard, kingPosition) {
           gameBoard
         );
 
+        //cycle through all possible moves 
         for (let endRow = 0; endRow < 8; endRow++) {
           for (let endCol = 0; endCol < 8; endCol++) {
             //for each possible move, test if defending player will still be in check
@@ -38,11 +41,12 @@ function checkMate(defendingColor, attackingColor, gameBoard, kingPosition) {
               if (pieceToMove === "king") {
                 tempKingPosition = [endRow, endCol];
               }
-              //check if move takes current player out of check. If it does, player is not in check mate so exit function
+              //check if move put currents player into check. 
               const vulnerablePositions = findAvailableMoves.bind(this)(
                 attackingColor,
                 tempNewState
               );
+              //If move does not put current player into check, they are not in check mate so exit function
               if (
                 !vulnerablePositions[tempKingPosition[0]][tempKingPosition[1]]
               ) {
@@ -54,6 +58,7 @@ function checkMate(defendingColor, attackingColor, gameBoard, kingPosition) {
       }
     }
   }
+  //if none of the possible moves put current player in a non check position, the current player is in check mate
   return true;
 }
 export default checkMate;

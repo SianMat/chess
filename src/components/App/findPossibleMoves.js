@@ -8,7 +8,7 @@ function findPossibleMoves(
   playerTurn, //the color representing whose turn it is
   gameBoard //the current state of the gameboard
 ) {
-  //initialise and 8by8 array of false
+  //initialise an 8by8 array of false
   let possibleMoves = [];
   for (let i = 0; i < 8; i++) {
     let row = [];

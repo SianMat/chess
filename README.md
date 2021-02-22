@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project was a learning exercise to practice working with React. The desktop app allows two players to play a game of chess on a single desktop.
+This project is a classic game I decided to make so that I could practice working with React. The desktop app allows two players to play a game of chess on a single desktop.
 
 ## Technologies
 
@@ -26,4 +26,4 @@ This app allows two players to play a game of chess on a single desktop. Both pl
 - Make it suitable for mobile devices
 - Make it playable by two players across a network
 - Allow a game to be saved mid-way through
-- Stop players being able to accidentally refresh the page without having to confirm
+- Stop players being able to accidentally refresh by adding a confirmation alert

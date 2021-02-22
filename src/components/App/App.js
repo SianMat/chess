@@ -17,23 +17,24 @@ class App extends React.Component {
     super(props);
     this.state = {
       gameBoard: initialiseBoard.bind(this)(), //8by8 array containing square color, and piece type, color and number of moves
-      playerTurn: "white",
-      activePiece: false, //false if no piece is selected, else gives coordinates
+      playerTurn: "white", //white goes first
+      activePiece: false, //false if no piece is selected, else gives coordinates of active piece
       possibleMoves: this.initialiseFalse(), //this keeps a record of all possible moves from active piece
       // availableMoves: this.initialiseFalse(), //this keeps a record of all available moves for player whose turn it is
-      easyModeBlack: false,
-      easyModeWhite: false,
-      blackKingPosition: [0, 4],
-      whiteKingPosition: [7, 4],
-      blackCheck: false,
-      whiteCheck: false,
+      easyModeBlack: false, //track if black player has selected to play in easy mode
+      easyModeWhite: false, //track if white player has selected to play in easy mode
+      blackKingPosition: [0, 4], //track the position of the black king to make checking for check quicker
+      whiteKingPosition: [7, 4], //track the position of the white king to make checking for check quicker
+      blackCheck: false, //track if black is in check
+      whiteCheck: false, //track if white is in check
       blackCapturedPieces: [], //track which white pieces the black player has captured
       whiteCapturedPieces: [], //track which black pieces the white player has captured
       illegalMove: false, //tracks if player has attempted to make a move that will put them into check
-      pawnPromotion: false,
-      checkMate: false,
+      pawnPromotion: false, //track if a pawn promotion has just been made so that additional checks for check can be made
+      checkMate: false, //Check if a player is in checkMate to end the game
+      moveSuccessful: false, //track if a move has been succesfully made so that checks for checkmate can be made
     };
-    this.baseState = this.state;
+    this.baseState = this.state; //used to reset the game
     this.handleEndGame = this.handleEndGame.bind(this);
   }
 
@@ -50,50 +51,58 @@ class App extends React.Component {
     return grid;
   }
 
-  //performs an additional check for check or checkmate if a pawn promotion has just been made
+  //performs a check for check mate after every move. Also does an additional check for check if pawn promotion has just been made
   componentDidUpdate(prevProps, prevState) {
+    const playerTurn = this.state.playerTurn;
+
     //check if a pawn promotion was made, as an additional check for check will be required
+    //this is called after the promotion is made and at the beginning of the next players turn
+    let blackCheck = this.state.blackCheck;
+    let whiteCheck = this.state.whiteCheck;
     if (!this.state.pawnPromotion && prevState.pawnPromotion) {
-      //this is called after the promotion is made and at the beginning of the next players turn
-      let blackCheck = false;
-      let whiteCheck = false;
-      let endGame = false;
-      const playerTurn = this.state.playerTurn;
       if (playerTurn === "white") {
         //check if white is in check
         whiteCheck = findAvailableMoves.bind(this)(
           "black",
           this.state.gameBoard
         )[this.state.whiteKingPosition[0]][this.state.whiteKingPosition[1]];
-        //if white is now in check, test for check mate
-        if (whiteCheck) {
-          endGame = checkMate.bind(this)(
-            "white",
-            "black",
-            this.state.gameBoard,
-            this.state.whiteKingPosition
-          );
-        }
       } else {
         //check if black is in check
         blackCheck = findAvailableMoves.bind(this)(
           "white",
           this.state.gameBoard
         )[this.state.blackKingPosition[0]][this.state.blackKingPosition[1]];
-        //if black is now in check, test for check mate
-        if (blackCheck) {
-          endGame = checkMate.bind(this)(
-            "black",
-            "white",
-            this.state.gameBoard,
-            this.state.blackKingPosition
-          );
-        }
       }
       this.setState({
-        blackCheck,
         whiteCheck,
-        endGame,
+        blackCheck,
+        moveSuccessful: true, //reset this back to true to check for check mate with new piece
+      });
+    }
+
+    //if a move has successfully been made, check for check mate
+    //this is called at the beginning of a players turn
+    let endGame = false;
+    if (this.state.moveSuccessful) {
+      //check for check mate after every move (a player does not have to be in check to be in check mate)
+      if (playerTurn === "white") {
+        endGame = checkMate.bind(this)(
+          "white",
+          "black",
+          this.state.gameBoard,
+          this.state.whiteKingPosition
+        );
+      } else {
+        endGame = checkMate.bind(this)(
+          "black",
+          "white",
+          this.state.gameBoard,
+          this.state.blackKingPosition
+        );
+      }
+      this.setState({
+        checkMate: endGame,
+        moveSuccessful: false,
       });
     }
   }
@@ -113,7 +122,7 @@ class App extends React.Component {
     });
   }
 
-  //closes the warning box and allows play to resume
+  //closes the illegal move warning box and allows play to resume
   handleWarningClick() {
     this.setState({
       illegalMove: false,
@@ -129,7 +138,7 @@ class App extends React.Component {
     }
   }
 
-  //toggles easy mode on and off for relevant color
+  //toggles easy mode on and off for relevant player
   handleToggle(color) {
     if (color === "black") {
       const easyMode = this.state.easyModeBlack;
@@ -144,6 +153,7 @@ class App extends React.Component {
     }
   }
 
+  //resets the board at the end of the game
   handleEndGame() {
     this.setState(this.baseState);
   }

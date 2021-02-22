@@ -1,14 +1,14 @@
 //no longer used as use highlightmoves instead
 
 function checkMove(
-  endRow,
-  endCol,
-  pieceToTake,
-  startRow,
-  startCol,
-  pieceToMove,
-  numMoves,
-  playerTurn
+  endRow, //the row index that the player is trying to move to
+  endCol, //the column index that the player is trying to move to
+  pieceToTake, //the piece that the player is trying to take (if there is one, else it will be null)
+  startRow, //the row index that the player is trying to move from
+  startCol, //the column index that the player is trying to move from
+  pieceToMove, //the piece type that the player is trying to move
+  numMoves, //the number of moves that the moving piece has already made (used for pawns)
+  playerTurn //the color of the player whose turn it is
 ) {
   if (pieceToMove === "pawn") {
     //white is moving up the board, black is moving down the board

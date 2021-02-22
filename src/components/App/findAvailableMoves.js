@@ -1,9 +1,11 @@
 // this function finds all available moves for specified player by calling findPossibleMoves for every piece
 import findPossibleMoves from "./findPossibleMoves";
 
-function findAvailableMoves(color, gameBoard) {
-  //color of attacking player, current state of gameBoard
-  //initialise and 8by8 array of false
+function findAvailableMoves(
+  color, //color of attacking player
+  gameBoard //current state of gameBoard
+) {
+  //initialise an 8by8 array of false
   let availableMoves = [];
   for (let i = 0; i < 8; i++) {
     let row = [];
